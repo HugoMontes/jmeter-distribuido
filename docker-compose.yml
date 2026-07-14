@@ -1,0 +1,40 @@
+services:
+  jmeter-slave1:
+    build: .
+    container_name: jmeter-slave1
+    hostname: jmeter-slave1
+    command: > 
+      jmeter-server 
+      -Djava.rmi.server.hostname=jmeter-slave1
+      -Dserver.rmi.ssl.disable=true
+    networks:
+      - jmeter-net
+
+  jmeter-slave2:
+    build: .
+    container_name: jmeter-slave2
+    hostname: jmeter-slave2
+    command: > 
+      jmeter-server 
+      -Djava.rmi.server.hostname=jmeter-slave2
+      -Dserver.rmi.ssl.disable=true
+    networks:
+      - jmeter-net
+
+  jmeter-master:
+    build: .
+    container_name: jmeter-master
+    hostname: jmeter-master
+    depends_on:
+      - jmeter-slave1
+      - jmeter-slave2
+    volumes:
+      - ./test-plans:/jmeter/test-plans
+      - ./results:/jmeter/results
+    networks:
+      - jmeter-net
+    entrypoint: ["tail", "-f", "/dev/null"]  # mantiene el contenedor vivo, esperando comandos
+
+networks:
+  jmeter-net:
+    driver: bridge
