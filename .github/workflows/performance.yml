@@ -2,6 +2,9 @@ name: JMeter Performance Test
 
 on:
   workflow_dispatch:  # Ejecutamos el Workflow manualmente
+    push:             # Ejecutamos el Workflow al hacer push
+      branches:
+        - master
 
 jobs:
   performance-test:
