@@ -1,28 +1,29 @@
 name: JMeter Performance Test
 
 on:
-  workflow_dispatch:
+  workflow_dispatch:  # Ejecutamos el Workflow manualmente
 
 jobs:
   performance-test:
-
+    # Ultima version de ubuntu
     runs-on: ubuntu-latest
 
     steps:
+      - name: Obtener codigo fuente del repositorio
+        uses: actions/checkout@v4
 
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-java@v4
+      - name: Configurar el entorno Java 
+        uses: actions/setup-java@v4
         with:
-          distribution: temurin
-          java-version: 21
+          distribution: temurin # Distribucion OpenJDK de Eclipse (Recomendada)
+          java-version: 21      # Version 21 LTS
 
-      - name: Download JMeter
+      - name: Descargar e instalar JMeter
         run: |
           wget https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-5.6.3.tgz
           tar -xzf apache-jmeter-5.6.3.tgz
 
-      - name: Run Test
+      - name: Ejecutar plan de pruebas
         run: |
           ./apache-jmeter-5.6.3/bin/jmeter \
           -n \
@@ -31,12 +32,14 @@ jobs:
           -e \
           -o report
 
-      - uses: actions/upload-artifact@v4
+      - name: Guardar reporte HTML
+        uses: actions/upload-artifact@v4
         with:
           name: JMeter-Report
           path: report
 
-      - uses: actions/upload-artifact@v4
+      - name: Guardar resultados JTL
+        uses: actions/upload-artifact@v4
         with:
           name: Results
           path: results.jtl
